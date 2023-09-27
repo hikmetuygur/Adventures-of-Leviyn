@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     CapsuleCollider2D bodyCollider2D;
     BoxCollider2D feetCollider2D;
     
-    
+    bool isAlive = true;
     Vector2 moveInput;
     
     void Start()
@@ -31,18 +31,22 @@ public class PlayerController : MonoBehaviour
     
     void Update()
     {
+        if(!isAlive) { return; }
         Run();
         FlipSprite();
         ClimbLadder();
+        Die();
     }
 
     void OnMove(InputValue value)
     {
+        if(!isAlive) { return; }
         moveInput = value.Get<Vector2>();
     }
 
     void Run()
     {
+        if(!isAlive) { return; }
         Vector2 moveVelocity = new Vector2(moveInput.x * playerSpeed, rigidbody.velocity.y);
         rigidbody.velocity = moveVelocity;
     }
@@ -87,4 +91,14 @@ public class PlayerController : MonoBehaviour
         bool hasVerticalSpeed = Mathf.Abs(rigidbody.velocity.y) > Mathf.Epsilon;
         animator.SetBool("isClimbing", hasVerticalSpeed);
     }
+    
+    void Die() {
+        if (bodyCollider2D.IsTouchingLayers(LayerMask.GetMask("Enemy")))
+        {
+            isAlive = false;
+            animator.SetTrigger("Dying");
+            rigidbody.velocity = new Vector2(20f, 20f);
+        }
+    }
+     
 }
