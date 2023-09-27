@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpSpeed = 25f;
     [SerializeField] private float climbSpeed = 5f;
     [SerializeField] private float gravityScaleAtStart;
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private Transform firePoint;
 
     private Rigidbody2D rigidbody;
     private Animator animator;
@@ -64,6 +66,7 @@ public class PlayerController : MonoBehaviour
     }
     void OnJump(InputValue value)
     {
+        if(!isAlive) { return; }
         if (!feetCollider2D.IsTouchingLayers(LayerMask.GetMask("Ground")))
         {
             return;
@@ -73,6 +76,14 @@ public class PlayerController : MonoBehaviour
         {
             rigidbody.velocity += new Vector2(0f, jumpSpeed);
         }
+        
+    }
+
+    void OnFire(InputValue valur)
+    {
+        if(!isAlive) { return; }
+        Instantiate(bullet, firePoint.position, firePoint.rotation );
+        animator.SetTrigger("Firing");
         
     }
 
@@ -93,7 +104,7 @@ public class PlayerController : MonoBehaviour
     }
     
     void Die() {
-        if (bodyCollider2D.IsTouchingLayers(LayerMask.GetMask("Enemy")))
+        if (bodyCollider2D.IsTouchingLayers(LayerMask.GetMask("Enemy", "Hazards")))
         {
             isAlive = false;
             animator.SetTrigger("Dying");
