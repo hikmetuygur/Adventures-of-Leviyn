@@ -8,7 +8,23 @@ public class LevelExit : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.CompareTag("Player"))
+        {
+            StartCoroutine(LoadNextLevel() );
+        }
+    }
+    
+    IEnumerator LoadNextLevel()
+    {
+        yield return new WaitForSeconds(1f);
         var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        SceneManager.LoadScene(currentSceneIndex + 1);
+        int nextSceneIndex = currentSceneIndex + 1;
+        if (nextSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            nextSceneIndex = 0;
+        }
+        
+        FindObjectOfType<ScenePersist>().ResetSession();
+        SceneManager.LoadScene(nextSceneIndex);
     }
 }
